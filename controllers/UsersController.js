@@ -12,9 +12,12 @@ class UsersController {
         if (!password) {
 			response.status(400).json({error: 'Missing password'});
 		}
-        if (await Mongo.users.findOne({email})) {
-			return response.status(400).json({error: 'Already exist'});
-		}
+        
+        const userVar = await Mongo.users.insertOne({
+            email,
+            passsword: sha1(password)
+        })
+        return response.status(201).json({id: userVar.insertedId, email});
     }
 }
 
