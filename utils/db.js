@@ -10,6 +10,9 @@ class DBClient {
     this.client.on('open', () => {
       this.connected = true;
       console.log("MongoDB client connected to the database");
+      this.db = this.client.db(this.dbName)
+      this.users = this.db.collection('users')
+      this.files = this.db.collection('files')
     })
     this.client.connect();
   }
