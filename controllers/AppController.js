@@ -1,5 +1,6 @@
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+something new
 
 module.exports = {
   getStatus : function(req, res){
