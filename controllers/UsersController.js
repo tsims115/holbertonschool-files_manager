@@ -1,6 +1,6 @@
 const Redis = require('../utils/redis');
-const Mongo = require('../utils/mongodb');
-const sha1 = require('../utils/sha1');
+const Mongo = require('../utils/db');
+const sha1 = require('sha1');
 const mongodb = require('mongodb');
 
 module.exports = {
@@ -19,7 +19,7 @@ module.exports = {
             email,
             passsword: sha1(password)
         })
-        return response.status(201).json({id: userVar.insertedId, email});
+        response.status(201).json({id: userVar.insertedId, email});
     }
 }
 
