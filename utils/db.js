@@ -9,7 +9,7 @@ class DBClient {
     this.client = new MongoClient(`mongodb://${this.host}:${this.port}`, { useUnifiedTopology: true });
     this.client.on('open', () => {
       this.connected = true;
-      console.log("Connected to MongoDB");
+      console.log("MongoDB client connected to the database");
     })
     this.client.connect();
   }

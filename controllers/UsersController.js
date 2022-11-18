@@ -3,8 +3,8 @@ const Mongo = require('../utils/mongodb');
 const sha1 = require('../utils/sha1');
 const mongodb = require('mongodb');
 
-class UsersController {
-    postNew(request, response) {
+module.exports = {
+    postNew: async (request, response) => {
         const {email, password } = request.body;
         if (!email) {
             response.status(400).json({error: 'Missing email'});
@@ -12,7 +12,9 @@ class UsersController {
         if (!password) {
 			response.status(400).json({error: 'Missing password'});
 		}
-        
+        if (Mongo.users.findOne()) {
+            response.status(400).json({error: 'Already exist'});
+        }
         const userVar = await Mongo.users.insertOne({
             email,
             passsword: sha1(password)
@@ -21,4 +23,3 @@ class UsersController {
     }
 }
 
-module.exports = UsersController;
