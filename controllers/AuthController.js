@@ -13,7 +13,7 @@ class AuthController {
     const password = Authorization[1];
     const user = await Mongo.users.findOne({
       email,
-      password: sha1(password),
+      password: password ? sha1(password) : null,
     });
     if (!user) {
       return response.status(401).json({ error: 'Unauthorized' });
