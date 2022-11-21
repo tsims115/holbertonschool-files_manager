@@ -4,7 +4,7 @@ const sha1 = require('sha1');
 const mongodb = require('mongodb');
 
 class UsersController {
-    static async postNew(request, response)
+    static async postNew(request, response) {
         const {email, password } = request.body;
         if (!email) {
             return response.status(400).json({error: 'Missing email'});
