@@ -19,7 +19,7 @@ class UsersController {
             email: email,
             passsword: sha1(password)
         });
-        response.status(201).json({id: userVar.insertedId, email});
+        return response.status(201).json({id: userVar.insertedId, email});
     }
 }
 
