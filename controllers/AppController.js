@@ -2,13 +2,18 @@ import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
 module.exports = {
-  getStatus : (req, res) => {
-    if (redisClient.isAlive() && dbClient.isAlive()) {
-      res.send({ "redis": true, "db": true }, 200);
-    }
-
-  },
-  getStats : async (req, res) => {
-    res.send({ "users": await dbClient.nbUsers(), "files": await dbClient.nbFiles() }, 200)
+  static async getStatus(req, res) {
+    const status = {
+      redis: Redis.isAlive(),
+      db: dbClient.isAlive()
+    };
+    res.status(200).json(status);
+  }
+  statis async getStats(req, res) {
+    const stats = {
+      users: await dbClient.nbUsers();
+      files: await dbClient.nbFiles();
+    };
+    res.status(200).json(stats);
   }
 }
