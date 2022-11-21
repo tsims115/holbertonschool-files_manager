@@ -26,7 +26,7 @@ class RedisClient {
 
   async set(key, value, duration) {
     await this.client.set(key, value);
-    this.client.expireat(key, parseInt((new Date()) / 1000) + duration);
+    this.client.expireat(key, parseInt((new Date()) / 1000, 10) + duration);
   }
 
   async del(key) {
