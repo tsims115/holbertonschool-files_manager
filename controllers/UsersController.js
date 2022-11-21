@@ -16,9 +16,9 @@ class UsersController {
             return response.status(400).json({error: 'Already exist'});
         }
         const userVar = await Mongo.users.insertOne({
-            email,
+            email: email,
             passsword: sha1(password)
-        })
+        });
         response.status(201).json({id: userVar.insertedId, email});
     }
 }
