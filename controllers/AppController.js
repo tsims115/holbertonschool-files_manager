@@ -4,7 +4,7 @@ import redisClient from '../utils/redis';
 module.exports = {
   static async getStatus(req, res) {
     const status = {
-      redis: Redis.isAlive(),
+      redis: redisClient.isAlive(),
       db: dbClient.isAlive()
     };
     res.status(200).json(status);
