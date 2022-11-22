@@ -67,11 +67,12 @@ class FilesController {
       id: newFile.insertedId, userId, name, type, isPublic, parentId,
     });
   }
+
   static async getShow(request, response) {
     const userId = new mongodb.ObjectId(request.params.id);
     const token = request.headers['X-token'];
     const key = `auth_${token}`;
-    const redisUser = await Redis.get(authToken);
+    const redisUser = await Redis.get(key);
     if (!redisUser) {
       return response.status(401).json({ error: 'Unauthorized' });
     }
@@ -83,24 +84,24 @@ class FilesController {
       return response.status(404).json({ error: 'Not found' });
     }
     return response.status(200).json({
-      id: file.id, userId: file.userId,
+      id: file.id,
+      userId: file.userId,
       name: file.name,
       type: file.type,
       isPublic: file.isPublic,
       parentId: file.parentId,
     });
   }
+
   static async getIndex(request, response) {
     const token = request.headers['X-token'];
     const key = `auth_${token}`;
-    const redisUser = await Redis.get(authToken);
+    const redisUser = await Redis.get(key);
     if (!redisUser) {
       return response.status(401).json({ error: 'Unauthorized' });
     }
-    const { page = 0, parentId = 0} = request.query;
-    let file = "file";
+    const { page = 0, parentId = 0 } = request.query;
     if (parentId !== 0) {
-      file = await Mongo.files.findOne({ parentId: parentId });
       const files = Mongo.files.aggregate([
         { $match: { parentId: new mongodb.ObjectId(parentId) } },
         { $skip: page * 20 },
@@ -109,35 +110,36 @@ class FilesController {
       if (files === []) {
         return response.status(200).json([]);
       }
-      let fileList = [];
-      for ( let i in files) {
+      const fileList = [];
+      for (let i = 0; i < files.length; i += 1) {
         fileList.push({
-          id: i._id,
-          userId: i.userId,
-          name: i.name,
-          type: i.type,
-          isPublic: i.isPublic,
-          parentId: i.parentId,
+          id: files[i]._id,
+          userId: files[i].userId,
+          name: files[i].name,
+          type: files[i].type,
+          isPublic: files[i].isPublic,
+          parentId: files[i].parentId,
         });
       }
-      return resonse.status(200).json(fileList);
+      return response.status(200).json(fileList);
     }
     const files = await Mongo.files.aggregate([
       { $match: { userId: new mongodb.ObjectId(new mongodb.ObjectId(redisUser)) } },
       { $skip: page * 20 },
       { $limit: 20 },
     ]).toArray();
-    for ( let i in files) {
+    const fileList = [];
+    for (let i = 0; i < files.length; i += 1) {
       fileList.push({
-        id: i._id,
-        userId: i.userId,
-        name: i.name,
-        type: i.type,
-        isPublic: i.isPublic,
-        parentId: i.parentId,
+        id: files[i]._id,
+        userId: files[i].userId,
+        name: files[i].name,
+        type: files[i].type,
+        isPublic: files[i].isPublic,
+        parentId: files[i].parentId,
       });
     }
-    return resonse.status(200).json(fileList);
+    return response.status(200).json(fileList);
   }
 }
 
