@@ -14,7 +14,6 @@ class FilesController {
       return response.status(401).json({ error: 'Unauthorized' });
     }
     const { name, type, parentId=0, isPublic=false, data } = request.body
-    const dataUtf8 = Buffer.from(data, 'base64').toString('utf-8');
     if (!name) {
       return response.status(400).json({ error: 'Missing name' });
     }
@@ -24,6 +23,7 @@ class FilesController {
     if (!data && type !== 'folder') {
       return response.status(400).json({ error: 'Missing data' });
     }
+    const dataUtf8 = Buffer.from(data, 'base64').toString('utf-8');
     if (parentId !== 0) {
       const pid = new mongodb.ObjectId(parentId);
       const file = await Mongo.files.findOne({ _id: pid });
