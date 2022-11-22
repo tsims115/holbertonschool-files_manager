@@ -7,6 +7,7 @@ const Redis = require('../utils/redis');
 
 class FilesController {
   static async postUpload(request, response) {
+    let dataUtf8;
     const token = request.headers['x-token'];
     const userSession = await Redis.get(`auth_${token}`);
     const types = ['folder', 'file', 'image'];
@@ -23,14 +24,13 @@ class FilesController {
     if (!data && type !== 'folder') {
       return response.status(400).json({ error: 'Missing data' });
     }
-    const dataUtf8 = Buffer.from(data, 'base64').toString('utf-8');
     if (parentId !== 0) {
       const pid = new mongodb.ObjectId(parentId);
       const file = await Mongo.files.findOne({ _id: pid });
       if (!file) {
         return response.status(400).json({ error: 'Parent not found' });
       } else if (file.type !== 'folder'){
-        return res.status(400).json({ error: 'Parent is not a folder' });
+        return response.status(400).json({ error: 'Parent is not a folder' });
       }
     }
     const userId = new mongodb.ObjectId(userSession);
@@ -46,7 +46,8 @@ class FilesController {
     if (!fs.existsSync(folderName)) {
       fs.mkdirSync(folderName);
     }
-    const localPath = `${folderName}/${uuidv4()}`
+    const localPath = `${folderName}/${uuidv4()}`;
+    dataUtf8 = Buffer.from(data, 'base64').toString('utf-8');
     fs.writeFile(localPath, dataUtf8, (err) => {
       if (err) throw err;
       console.log('Saved!');
