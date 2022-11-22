@@ -7,14 +7,16 @@ const Redis = require('../utils/redis');
 
 class FilesController {
   static async postUpload(request, response) {
-    let dataUtf8;
+    let dataUtf8 = 'Data String';
     const token = request.headers['x-token'];
     const userSession = await Redis.get(`auth_${token}`);
     const types = ['folder', 'file', 'image'];
     if (!userSession) {
       return response.status(401).json({ error: 'Unauthorized' });
     }
-    const { name, type, parentId=0, isPublic=false, data } = request.body
+    const {
+      name, type, parentId = 0, isPublic = false, data,
+    } = request.body;
     if (!name) {
       return response.status(400).json({ error: 'Missing name' });
     }
@@ -29,17 +31,18 @@ class FilesController {
       const file = await Mongo.files.findOne({ _id: pid });
       if (!file) {
         return response.status(400).json({ error: 'Parent not found' });
-      } else if (file.type !== 'folder'){
+      }
+      if (file.type !== 'folder') {
         return response.status(400).json({ error: 'Parent is not a folder' });
       }
     }
     const userId = new mongodb.ObjectId(userSession);
-    if (type === "folder") {
+    if (type === 'folder') {
       const newFile = await Mongo.files.insertOne({
         userId, name, type, isPublic, parentId,
       });
       return response.status(201).send({
-        id: newFile.insertedId, userId, name, type, isPublic, parentId
+        id: newFile.insertedId, userId, name, type, isPublic, parentId,
       });
     }
     const folderName = process.env.FOLDER_PATH || '/tmp/files_manager';
@@ -61,8 +64,8 @@ class FilesController {
       localPath,
     });
     return response.status(201).send({
-      id: newFile.insertedId, userId, name, type, isPublic, parentId
-    })
+      id: newFile.insertedId, userId, name, type, isPublic, parentId,
+    });
   }
 }
 
