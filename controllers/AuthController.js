@@ -11,6 +11,7 @@ class AuthController {
     Authorization = Authorization.toString('utf-8').split(':');
     const email = Authorization[0];
     let password = Authorization[1];
+    console.log(email);
     if (password) {
       password = sha1(password);
     } else {
@@ -30,8 +31,9 @@ class AuthController {
   }
 
   static async getDisconnect(request, response) {
-    const token = request.headers['x-token'];
+    const token = request.headers['X-token'];
     const userSession = await Redis.get(`auth_${token}`);
+    console.log(userSession);
     if (!userSession) {
       return response.status(401).json({ error: 'Unauthorized' });
     }

@@ -70,7 +70,7 @@ class FilesController {
 
   static async getShow(request, response) {
     const userId = new mongodb.ObjectId(request.params.id);
-    const token = request.headers['X-token'];
+    const token = request.headers['x-token'];
     const key = `auth_${token}`;
     const redisUser = await Redis.get(key);
     if (!redisUser) {
@@ -94,9 +94,10 @@ class FilesController {
   }
 
   static async getIndex(request, response) {
-    const token = request.headers['X-token'];
+    const token = request.headers['x-token'];
     const key = `auth_${token}`;
     const redisUser = await Redis.get(key);
+    console.log(redisUser);
     if (!redisUser) {
       return response.status(401).json({ error: 'Unauthorized' });
     }
