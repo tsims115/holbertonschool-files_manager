@@ -40,7 +40,7 @@ class FilesController {
     const userid = new mongodb.ObjectId(userSession);
     if (type === "folder") {
       const newFile = await Mongo.files.insertOne({
-        userId, name, type, isPublic, parentId,
+        userid, name, type, isPublic, parentId,
       });
       return response.status(201).json({
         id: newFile.insertedId, userid, name, type, isPublic, parentId
@@ -50,10 +50,13 @@ class FilesController {
     if (!fs.existsSync(folderName)) {
       fs.mkdirSync(folderName);
     }
-    const localPath = `${FOLDER_PATH}/${uuid()}`
-    fs.writeFile(localPath, dataUtf8);
+    const localPath = `${folderName}/${uuidv4()}`
+    fs.writeFile(localPath, dataUtf8, (err) => {
+      if (err) throw err;
+      console.log('Saved!');
+    });
     const newFile = await Mongo.files.insertOne({
-      userId,
+      userid,
       name,
       type,
       isPublic,
