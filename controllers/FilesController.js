@@ -2,7 +2,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 const mongodb = require('mongodb');
 const fs = require('fs');
-const sha1 = require('sha1');
 const Mongo = require('../utils/db');
 const Redis = require('../utils/redis');
 
@@ -16,9 +15,6 @@ class FilesController {
     }
     const { name, type, parentId=0, isPublic=false, data } = request.body
     const dataUtf8 = Buffer.from(data, 'base64').toString('utf-8');
-    console.log(name);
-    console.log(type);
-    console.log(dataUtf8);
     if (!name) {
       return response.status(400).json({ error: 'Missing name' });
     }
@@ -26,7 +22,7 @@ class FilesController {
       return response.status(400).json({ error: 'Missing type' });
     }
     if (!data && type !== 'folder') {
-      return response.status(400).json({ error: 'Missing type' });
+      return response.status(400).json({ error: 'Missing data' });
     }
     if (parentId !== 0) {
       const pid = new mongodb.ObjectId(parentId);
@@ -42,7 +38,7 @@ class FilesController {
       const newFile = await Mongo.files.insertOne({
         userId, name, type, isPublic, parentId,
       });
-      return response.status(201).json({
+      return response.status(201).send({
         id: newFile.insertedId, userId, name, type, isPublic, parentId
       });
     }
@@ -63,7 +59,7 @@ class FilesController {
       parentId,
       localPath,
     });
-    return response.status(201).json({
+    return response.status(201).send({
       id: newFile.insertedId, userId, name, type, isPublic, parentId
     })
   }
