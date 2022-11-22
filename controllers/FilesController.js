@@ -37,13 +37,13 @@ class FilesController {
         return res.status(400).json({ error: 'Parent is not a folder' });
       }
     }
-    const userid = new mongodb.ObjectId(userSession);
+    const userId = new mongodb.ObjectId(userSession);
     if (type === "folder") {
       const newFile = await Mongo.files.insertOne({
-        userid, name, type, isPublic, parentId,
+        userId, name, type, isPublic, parentId,
       });
       return response.status(201).json({
-        id: newFile.insertedId, userid, name, type, isPublic, parentId
+        id: newFile.insertedId, userId, name, type, isPublic, parentId
       });
     }
     const folderName = process.env.FOLDER_PATH || '/tmp/files_manager';
@@ -56,7 +56,7 @@ class FilesController {
       console.log('Saved!');
     });
     const newFile = await Mongo.files.insertOne({
-      userid,
+      userId,
       name,
       type,
       isPublic,
@@ -64,7 +64,7 @@ class FilesController {
       localPath,
     });
     return response.status(201).json({
-      id: newFile.insertedId, userid, name, type, isPublic, parentId
+      id: newFile.insertedId, userId, name, type, isPublic, parentId
     })
   }
 }
